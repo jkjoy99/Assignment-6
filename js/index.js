@@ -1,17 +1,22 @@
-let getData = [];
+
+const universeContainer = document.getElementById('main-div');
+const AllData = []
+
 // fetch api loaded
 const load = () =>{
     // spinner added
     document.getElementById("spinner").classList.remove("d-none");
     fetch(`https://openapi.programming-hero.com/api/ai/tools`)
     .then(res => res.json())
-    .then(data => { dataFile(data.data.tools);})
+    .then(data => { dataFile(data.data.tools);
+      AllData.push(data.data.tools);
+   })
 }
 
 // create dynamic card section
 const dataFile = (file) =>{
    const btnShow = document.getElementById("btn-show-all")
-   const container = document.getElementById("main-div");
+   
     if( file.length > 6){
       file = file.slice(0, 6);
       btnShow.classList.remove("d-none");
@@ -19,44 +24,88 @@ const dataFile = (file) =>{
     else{
       btnShow.classList.add("d-none");
     }
-   file.forEach(elements => {
-      console.log(elements);
-      const {image, features, name, published_in, id} = elements;
+   file.forEach(universe => {
+      // console.log(elements);
+      // const {image, features, name, published_in, id} = elements;
       const createDiv = document.createElement("div");
       createDiv.classList.add("col-lg-4", "mb-4");
       createDiv.innerHTML = `
         <div class="card-div p-3">
-          <img src="${image}" alt="" class="img-all">
+          <img src="${universe.image}" alt="" class="img-all">
             <div class="img-details">
                <h2>Features</h2>
-                <p>1. ${features[0]}</p>
-                <p>2. ${features[1]}</p>
-                <p>3. ${features[2] ? features[2] : "No Data"}</p>
+                <p>1. ${universe.features[0]}</p>
+                <p>2. ${universe.features[1]}</p>
+                <p>3. ${universe.features[2] ? universe.features[2] : "No Data"}</p>
               </div>
             <hr>
 
           <div class="down-section-card d-flex justify-content-between align-items-center">
             <div class="left-card">
-              <h2>${name}</h2>
+              <h2>${universe.name}</h2>
                 <div class="flex align-items-center">
                     <img src="images/date.png" alt="">
-                    <span>${published_in}</span>
+                    <span>${universe.published_in}</span>
                 </div>
             </div>
 
             <div class="right-card">
-                <button class="border-0 rounded-circle" onclick="arrowClick('${id}')">
+                <button class="border-0 rounded-circle" onclick="arrowClick('${universe.id}')">
                     <img src="images/arrow.png" alt="">
                 </button>
             </div>
          </div>
         </div>
       `;
-      container.appendChild(createDiv);
+      universeContainer.appendChild(createDiv);
       document.getElementById("spinner").classList.add("d-none");
    });
 }
 
+const btnShow = document.getElementById("btn-show-all").addEventListener('click', () =>{
+   universeContainer.textContent = ''
+      showAllFun(AllData[0]);
+})
+
+const showAllFun = datas =>{
+
+   datas.forEach(universe =>{
+      // const {image, features, name, published_in, id} = elements;
+      const createDiv = document.createElement("div");
+      createDiv.classList.add("col-lg-4", "mb-4");
+      createDiv.innerHTML = `
+        <div class="card-div p-3">
+          <img src="${ universe.image}" alt="" class="img-all">
+            <div class="img-details">
+               <h2>Features</h2>
+                <p>1. ${universe.features[0]}</p>
+                <p>2. ${universe.features[1]}</p>
+                <p>3. ${universe.features[2] ? universe.features[2] : "No Data"}</p>
+              </div>
+            <hr>
+
+          <div class="down-section-card d-flex justify-content-between align-items-center">
+            <div class="left-card">
+              <h2>${universe.name}</h2>
+                <div class="flex align-items-center">
+                    <img src="images/date.png" alt="">
+                    <span>${universe.published_in}</span>
+                </div>
+            </div>
+
+            <div class="right-card">
+                <button class="border-0 rounded-circle" onclick="arrowClick('${universe.id}')">
+                    <img src="images/arrow.png" alt="">
+                </button>
+            </div>
+         </div>
+        </div>
+      `;
+      universeContainer.appendChild(createDiv);
+      document.getElementById("spinner").classList.add("d-none");
+   }) 
+
+}
 const arrowClick = async(dataReceived) =>{
      try{
         fetch(`https://openapi.programming-hero.com/api/ai/tool/${dataReceived}`)
@@ -141,6 +190,12 @@ document.getElementById("btn-show-all").addEventListener("click", function(){
 const deal = (dataFile) =>{
    load(dataFile);
 }
+
+// const btnSortData = () => {
+//    const data = AllData;
+//    data.sort((a, b) => new data(b.published_in) - new data(a.published_in));
+//    dataFile(AllData);
+// };
 
 
 
