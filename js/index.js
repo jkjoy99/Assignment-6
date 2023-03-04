@@ -3,27 +3,31 @@ const universeContainer = document.getElementById('main-div');
 const AllData = []
 
 // fetch api loaded
-const load = () =>{
-    // spinner added
-    document.getElementById("spinner").classList.remove("d-none");
-    fetch(`https://openapi.programming-hero.com/api/ai/tools`)
-    .then(res => res.json())
-    .then(data => { dataFile(data.data.tools);
-      AllData.push(data.data.tools);
-   })
+const load = () => {
+   // spinner added
+   document.getElementById("spinner").classList.remove("d-none");
+   fetch(`https://openapi.programming-hero.com/api/ai/tools`)
+      .then(res => res.json())
+      .then(data => {
+         dataFile(data.data.tools);
+         AllData.push(data.data.tools);
+
+
+      })
 }
 
+
 // create dynamic card section
-const dataFile = (file) =>{
+const dataFile = (file) => {
    const btnShow = document.getElementById("btn-show-all")
-   
-    if( file.length > 6){
+
+   if (file.length > 6) {
       file = file.slice(0, 6);
       btnShow.classList.remove("d-none");
-    }
-    else{
+   }
+   else {
       btnShow.classList.add("d-none");
-    }
+   }
    file.forEach(universe => {
       // console.log(elements);
       // const {image, features, name, published_in, id} = elements;
@@ -62,20 +66,27 @@ const dataFile = (file) =>{
    });
 }
 
-const btnShow = document.getElementById("btn-show-all").addEventListener('click', () =>{
+const btnShow = document.getElementById("btn-show-all").addEventListener('click', () => {
    universeContainer.textContent = ''
-      showAllFun(AllData[0]);
+   showAllFun();
+   document.getElementById("spinner").innerHTML = '';
+   document.getElementById('show-all-container').innerHTML = '';
 })
 
-const showAllFun = datas =>{
+const showAllFun = () => {
 
-   datas.forEach(universe =>{
+
+   const datas = AllData[0];
+   datas.slice(6, 12)
+
+
+   datas.forEach(universe => {
       // const {image, features, name, published_in, id} = elements;
       const createDiv = document.createElement("div");
       createDiv.classList.add("col-lg-4", "mb-4");
       createDiv.innerHTML = `
         <div class="card-div p-3">
-          <img src="${ universe.image}" alt="" class="img-all">
+          <img src="${universe.image}" alt="" class="img-all">
             <div class="img-details">
                <h2>Features</h2>
                 <p>1. ${universe.features[0]}</p>
@@ -103,26 +114,44 @@ const showAllFun = datas =>{
       `;
       universeContainer.appendChild(createDiv);
       document.getElementById("spinner").classList.add("d-none");
-   }) 
+   })
 
 }
-const arrowClick = async(dataReceived) =>{
-     try{
-        fetch(`https://openapi.programming-hero.com/api/ai/tool/${dataReceived}`)
-        .then(res => res.json())
-        .then(data => modalFile(data.data));
-     }
-     catch(error){
-        console.log(error);
-     }
+
+const getSrotedData = () => {
+   const tools = AllData[0];
+
+
+   // console.log(tools)
+
+   tools.sort(function (a, b) {
+      var c = new Date(a.published_in);
+      var d = new Date(b.published_in);
+      return c - d;
+   });
+
+   return tools;
+
+
 }
 
-const modalFile = (modalData) =>{
-    const {accuracy, description, pricing, integrations, features, image_link, input_output_examples
-    } = modalData;
-    const modalContainer = document.getElementById("modal-detail");
-    modalContainer.classList.remove("d-none");
-    modalContainer.innerHTML = `
+const arrowClick = async (dataReceived) => {
+   try {
+      fetch(`https://openapi.programming-hero.com/api/ai/tool/${dataReceived}`)
+         .then(res => res.json())
+         .then(data => modalFile(data.data));
+   }
+   catch (error) {
+      console.log(error);
+   }
+}
+
+const modalFile = (modalData) => {
+   const { accuracy, description, pricing, integrations, features, image_link, input_output_examples
+   } = modalData;
+   const modalContainer = document.getElementById("modal-detail");
+   modalContainer.classList.remove("d-none");
+   modalContainer.innerHTML = `
     <div class="main-container">
             <img onclick="crossBtn()" src="images/cross.png" alt="" class="delete-div"> 
        <div class="modal-container"> 
@@ -131,10 +160,10 @@ const modalFile = (modalData) =>{
                <p>${description ? description : "NO Bio found"}</p>
                <div class="three-card-div">
                   <div class="all-card">
-                     <h3><span class="d-block">${pricing ? pricing[0].price : "free of cost/" }</span><span class="d-block">${pricing ? pricing[0].plan : "Basic"}</span></h3>
+                     <h3><span class="d-block">${pricing ? pricing[0].price : "free of cost/"}</span><span class="d-block">${pricing ? pricing[0].plan : "Basic"}</span></h3>
                   </div>
                   <div class="all-card">
-                     <h3 style="color: #F28927"><span class="d-block">${pricing ? pricing[1].price : "free of cost/"}</span><span class="d-block">${pricing? pricing[1].plan : "Pro"}</span></h3>
+                     <h3 style="color: #F28927"><span class="d-block">${pricing ? pricing[1].price : "free of cost/"}</span><span class="d-block">${pricing ? pricing[1].plan : "Pro"}</span></h3>
                   </div>
                   <div class="all-card">
                      <h3 style="color: #EB5757"><span class="d-block">${pricing ? pricing[2].price : "free of cost/"}</span><span class="d-block">${pricing ? pricing[2].plan : "Enterprise"}</span></h3>
@@ -145,9 +174,9 @@ const modalFile = (modalData) =>{
                   <div class="features-div">
                      <h2>Features</h2>
                      <ul>
-                        <li>${features[1].feature_name ? features[1].feature_name : "No data Found" }</li>
-                        <li>${features[2].feature_name ? features[2].feature_name : "No data Found" }</li>
-                        <li>${features[3].feature_name ? features[3].feature_name : "No data Found" }</li>
+                        <li>${features[1].feature_name ? features[1].feature_name : "No data Found"}</li>
+                        <li>${features[2].feature_name ? features[2].feature_name : "No data Found"}</li>
+                        <li>${features[3].feature_name ? features[3].feature_name : "No data Found"}</li>
                      </ul>
                   </div>
 
@@ -168,7 +197,7 @@ const modalFile = (modalData) =>{
                   <span id="main-accuracy" style="font-weight: 500" class="badge text-bg-danger"><span>${accuracy.score ? accuracy.score * 100 : "0"}</span>% accuracy</span>
                </div>
                <h1>${input_output_examples ? input_output_examples[0].input : "No title Here"}</h1>
-               <p>${input_output_examples ? input_output_examples[0].output.slice(0,150) + " ..." : "No! Not Yet! Take a break!!!"}</p>
+               <p>${input_output_examples ? input_output_examples[0].output.slice(0, 150) + " ..." : "No! Not Yet! Take a break!!!"}</p>
             </div>
 
           </div>
@@ -177,25 +206,62 @@ const modalFile = (modalData) =>{
 }
 
 // remove modal remove it
-const crossBtn = () =>{
-    document.getElementById("modal-detail").classList.add("d-none");
+const crossBtn = () => {
+   document.getElementById("modal-detail").classList.add("d-none");
 }
 
 // show all click
-document.getElementById("btn-show-all").addEventListener("click", function(){
-      document.getElementById("spinner").classList.remove("d-none");
-      deal();
+document.getElementById("btn-show-all").addEventListener("click", function () {
+   document.getElementById("spinner").classList.remove("d-none");
+   deal();
 })
 
-const deal = (dataFile) =>{
-   load(dataFile);
-}
-
-// const btnSortData = () => {
-//    const data = AllData;
-//    data.sort((a, b) => new data(b.published_in) - new data(a.published_in));
-//    dataFile(AllData);
-// };
+// const deal = (dataFile) =>{
+//    load(dataFile);
+// }
 
 
 
+
+document.getElementById('sort-btn').addEventListener('click', () => {
+   universeContainer.innerHTML = ``;
+   const file = getSrotedData();
+   console.log(file);
+
+   file.forEach(universe => {
+      // console.log(elements);
+      // const {image, features, name, published_in, id} = elements;
+      const createDiv = document.createElement("div");
+      createDiv.classList.add("col-lg-4", "mb-4");
+      createDiv.innerHTML = `
+        <div class="card-div p-3">
+          <img src="${universe.image}" alt="" class="img-all">
+            <div class="img-details">
+               <h2>Features</h2>
+                <p>1. ${universe.features[0]}</p>
+                <p>2. ${universe.features[1]}</p>
+                <p>3. ${universe.features[2] ? universe.features[2] : "No Data"}</p>
+              </div>
+            <hr>
+
+          <div class="down-section-card d-flex justify-content-between align-items-center">
+            <div class="left-card">
+              <h2>${universe.name}</h2>
+                <div class="flex align-items-center">
+                    <img src="images/date.png" alt="">
+                    <span>${universe.published_in}</span>
+                </div>
+            </div>
+
+            <div class="right-card">
+                <button class="border-0 rounded-circle" onclick="arrowClick('${universe.id}')">
+                    <img src="images/arrow.png" alt="">
+                </button>
+            </div>
+         </div>
+        </div>
+      `;
+      universeContainer.appendChild(createDiv);
+      document.getElementById("spinner").classList.add("d-none");
+   });
+})
